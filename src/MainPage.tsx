@@ -9,7 +9,7 @@ function MainPage() {
 
   return (
     <div className='no-cursor'> {/* 지금은 글 쓰는 것들이 MainPage 함수 밖에 있거나 아예 다른 파일이라 문제는 없는데 혹시 이 함수 안에서 글을 써야되는 일이 생기면 이거 빼야됨. 아닌가 안 빼도 글 쓸 수 있나 정확하지 않음 */}
-
+<p>a</p>
         <header className="navbar-header">
             <div className="logo">로고? 아이콘? 이름?</div>
             <nav>
