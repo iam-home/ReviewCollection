@@ -1,0 +1,18 @@
+#.github/workflows/supabase_wake_up.yml
+
+# name: Supabase Keep Alive
+
+# on:
+#   schedule:
+#     - cron: '0 0 * * *'
+#   workflow_dispatch:
+
+# jobs:
+#   ping_db:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Send Request to Supabase
+#         run: |
+#           curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/ToDo?select=id" \
+#           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+#           -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"

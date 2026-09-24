@@ -115,12 +115,12 @@
 
 .write-btn:hover {
   background-color: #10b981;
-  transform: translateY(-2px); /* 마우스 올리면 살짝 뜸 */
+  transform: translateY(-2px);
 }
 
 .card {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 알아서 줄바꿈 됨 */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 20px;
   padding: 20px 40px;
 }

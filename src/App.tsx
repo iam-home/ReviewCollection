@@ -2,7 +2,7 @@
 import { Routes, Route } from 'react-router-dom';
 import MainPage from './MainPage.tsx';
 import WritePage from './WritePage.tsx';
-import Login from './Login.tsx';
+import Login from './LoginPage.tsx';
 
 import './App.css'
 function App() {

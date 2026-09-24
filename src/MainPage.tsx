@@ -1,24 +1,52 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react'
-// import { supabase } from './supabaseClient';
+import { useEffect, useState } from 'react'
+import { client } from './supabaseClient.ts';
+import { checkLogin } from './supabaseClient.ts';
 
 function MainPage() {
   const navigate = useNavigate();
   const [isSearch, setIsSearch] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchSession = async () => {
+      const currentSession = await checkLogin();
+      setSession(currentSession);
+      setLoading(false);
+    };
+    fetchSession();
+}, []);
 
+  if (loading) {
+    return <div>로그인 정보 확인 중...</div>; 
+  }
+
+  const loginText = session?.user ? "마이페이지? 로그아웃? 다크모드? 설정?" : "로그인하셈";
+
+  const Logout = async () => {
+  const { error } = await client.auth.signOut();
+  if (!error) {
+    setSession(null);
+  }
+};
+  
   return (
     <div className='no-cursor'> {/* 지금은 글 쓰는 것들이 MainPage 함수 밖에 있거나 아예 다른 파일이라 문제는 없는데 혹시 이 함수 안에서 글을 써야되는 일이 생기면 이거 빼야됨. 아닌가 안 빼도 글 쓸 수 있나 정확하지 않음 */}
-<p>a</p>
+<button onClick={ Logout }>일단 로그아웃</button>
         <header className="navbar-header">
-            <div className="logo">로고? 아이콘? 이름?</div>
+            <div className="logo">ReviewCollection</div>
+            {/* 프로토타입 이름 */}
             <nav>
 
-                <p>누구누구의 라이브러리</p> {/* 이거 어떡함 */}
+                { session?.user && <p>{ session.user.email }의 라이브러리</p>}
+                {/* @gmail.com 까지 나오는 거 너무 길어. 아이디를 정하게 하든가, 아니면 해당 로그인 방식의 닉네임만 뜨게 하든가 */}
 
                 <ul className="nav-links">
-                <li><a onClick={()=> setIsSearch(!isSearch) }>{isSearch ? "검색" : "검색"}</a></li> {/* 텍스트 선택? 이거 안 뜨게 하고 싶은데 */}
-                <li><a href="/login">로그인</a></li>
+                <li><a onClick={()=> setIsSearch(!isSearch) }>{isSearch ? "검색" : "검색"}</a></li>
+                <li><a onClick={()=>{ session?.user ? console.log("멍청이") : navigate('/login'); }}>{ loginText }</a></li>
+                {/* 유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈 */}
                 </ul>
             </nav>
         </header>
@@ -28,6 +56,7 @@ function MainPage() {
         <div className='ctrl'>
             <div className="dropdown-container">
                 <p id='filter-text' className="dropdown-btn" onClick={()=>{ setIsOpen(!isOpen) }}>필터</p>
+                {/* 다른 곳 눌렀을 때 메뉴 안 없어짐. 없어지게 하셈. lostnfound 위치 선택하는 거기에 이거 있지않냐 */}
                 {isOpen && (
                     <ul className="dropdown-menu">
                         <li><a onClick={()=>{ console.log("영화만 모아서 보여주기"); setIsOpen(false); }}>영화</a></li>
