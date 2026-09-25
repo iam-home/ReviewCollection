@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
-import { client } from './supabaseClient.ts';
-import { checkLogin } from './supabaseClient.ts';
+import { client, checkLogin } from './supabaseClient.ts';
 
 function MainPage() {
+  // document.write(email);
   const navigate = useNavigate();
   const [isSearch, setIsSearch] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

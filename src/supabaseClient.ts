@@ -38,8 +38,7 @@ export const signInWithGoogle = async () => {
   const { error } = await client.auth.signInWithOAuth({ // data 있었는데 안 쓰는데 왜 만드냐고 경고 뜨길래 지움. 필요하면 만드셈
     provider: 'google',
     options: {
-      // redirectTo: 'https://reviewcollection.pages.dev/',
-      redirectTo: 'http://localhost:5173/',
+      redirectTo: import.meta.env.DEV ? 'http://localhost:5173/' : 'https://reviewcollection.pages.dev/',
       queryParams: {
         prompt: 'select_account',
         access_tpye: 'offline'
@@ -48,9 +47,34 @@ export const signInWithGoogle = async () => {
   });
   
   if (error) console.error('error:', error.message);
+  {/* 에러 메시지 이거 나중에 싹 지우셈. 유저들한테 이걸 왜 보여줌 */}
 }
 
 
 export const signInWithKakao = async () => {
-  console.log("하는중");
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'kakao',
+    options: {
+      redirectTo: import.meta.env.DEV ? 'http://localhost:5173/' : 'https://reviewcollection.pages.dev/',
+      queryParams: {
+        prompt: 'select_account',
+        access_tpye: 'offline'
+      }
+    }
+  });
+  if (error) console.error('error: ', error.message);
 }
+
+export const getUserInfo = async () => {
+  const { data: { user }, error } = await client.auth.getUser();
+
+  if (user) {
+    
+    const email = user.email; // || user.user_metadata.email
+    const nickname = user.user_metadata.full_name;
+    const profileImage = user.user_metadata.avatar_url; // 카카오 프로필 이미지 URL
+
+    console.log(`${nickname}`);
+  }
+};
+

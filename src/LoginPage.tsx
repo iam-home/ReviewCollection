@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { signInWithGoogle } from './supabaseClient.ts';
-import { signInWithKakao } from './supabaseClient.ts';
+import { signInWithGoogle, signInWithKakao } from './supabaseClient.ts';
 
 function Login() {
   const navigate = useNavigate();
