@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { client, checkLogin } from './supabaseClient.ts';
 
 function MainPage() {
-  // document.write(email);
   const navigate = useNavigate();
   const [isSearch, setIsSearch] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

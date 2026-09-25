@@ -65,16 +65,14 @@ export const signInWithKakao = async () => {
   if (error) console.error('error: ', error.message);
 }
 
-export const getUserInfo = async () => {
-  const { data: { user }, error } = await client.auth.getUser();
+// export const getUserInfo = async () => {
+//   const { data: { user }, error } = await client.auth.getUser();
 
-  if (user) {
+//   if (user) {
     
-    const email = user.email; // || user.user_metadata.email
-    const nickname = user.user_metadata.full_name;
-    const profileImage = user.user_metadata.avatar_url; // 카카오 프로필 이미지 URL
+//     // const email = user.email; // || user.user_metadata.email
+//     const nickname = user.user_metadata.full_name;
+//     // const profileImage = user.user_metadata.avatar_url; // 카카오 프로필 이미지 URL
 
-    console.log(`${nickname}`);
-  }
-};
-
+//   }
+// };
