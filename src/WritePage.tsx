@@ -28,7 +28,7 @@ function WritePage() {
       <textarea placeholder="내용을 입력하세요..." rows={5} cols={40} />
       <br />
 
-      <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/'); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
+      <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/', { replace: true }); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
       <button onClick={()=>{ { isLogin ? <User/> : <NotUser/> }; }}>등록</button> {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* navigate('/'); 이거 일단 뺐음 */}
 
       {/* 로그인 유저면 User, 비로그인 유저면 NotUser */}
@@ -50,4 +50,4 @@ const User = () => { // 로그인 유저 디비
   )
 }
 
-export default WritePage;
+export default WritePage; {/* 제목 내용 하나라도 공백이면 빠꾸 잊지말자 */}

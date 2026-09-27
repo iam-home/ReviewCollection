@@ -22,7 +22,7 @@ function MainPage() {
     return <div>로그인 정보 확인 중...</div>; 
   }
 
-  const loginText = session?.user ? "마이페이지? 로그아웃? 다크모드? 설정?" : "로그인하셈";
+  // const loginText = session?.user ? "마이페이지? 로그아웃? 다크모드? 설정?" : "로그인하셈";
 
   const Logout = async () => {
   const { error } = await client.auth.signOut();
@@ -38,14 +38,15 @@ function MainPage() {
             <div className="logo">ReviewCollection</div>
             {/* 프로토타입 이름 */}
             <nav>
-
-                { session?.user && <p>{ session.user.email }의 라이브러리</p>}
-                {/* @gmail.com 까지 나오는 거 너무 길어. 아이디를 정하게 하든가, 아니면 해당 로그인 방식의 닉네임만 뜨게 하든가 */}
-
                 <ul className="nav-links">
                 <li><a onClick={()=> setIsSearch(!isSearch) }>{isSearch ? "검색" : "검색"}</a></li>
-                <li><a onClick={()=>{ session?.user ? console.log("멍청이") : navigate('/login'); }}>{ loginText }</a></li>
-                {/* 유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈 */}
+                { session?.user
+                ? <li><a onClick={()=>{ session?.user && console.log("유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈"); }}>{ session.user.email }의 라이브러리</a></li>
+                : <li><a onClick={()=>{ !session?.user && navigate('/login'); }}> (여기는 형광펜이나 포스트잇 같은 거로 가려둔 거처럼)의 라이브러리</a></li>
+                }
+                {/* @gmail.com 까지 나오는 거 너무 길어. 아이디를 정하게 하든가, 아니면 닉네임만 뜨게 하든가 */}
+
+                {/* <li><a onClick={()=>{ session?.user ? console.log("멍청이") : navigate('/login'); }}>{ loginText }</a></li> */}
                 </ul>
             </nav>
         </header>

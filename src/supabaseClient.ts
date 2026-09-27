@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+// import { href } from 'react-router-dom';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -64,6 +65,61 @@ export const signInWithKakao = async () => {
   });
   if (error) console.error('error: ', error.message);
 }
+
+export const signUpWithEmail = async (fullEmail: string, password: string) => {
+  try {
+    const { error } = await client.auth.signUp({
+      email: fullEmail,
+      password: password,
+    });
+    if (error) {
+      console.log("실패했지렁");
+      return false;
+    }
+
+    return true;
+  
+  } catch (e) {
+    console.log("실패했지렁");
+    return false;
+  }
+}
+ // 얘들 diplay name이 없는데. nickname을 어떻게 써먹냐
+export const signInWithEmail = async (fullEmail: string, password: string) => {
+  try {
+    const { error } = await client.auth.signInWithPassword({
+      email: fullEmail,
+      password: password,
+    });
+    if (error) {
+      console.log("실패했지렁");
+      return false;
+    }
+
+    return true;
+
+  } catch (e) {
+    console.log("실패했지렁");
+    return false;
+  }
+}
+
+// async function dever() {
+//   try {
+//     const { data, error } = await client.auth.signInWithPassword({
+//     email: 'test@gmail.com',
+//     password: 'uiopui'
+//   });
+//   if (error) {
+//     console.error(error);
+//     return false;
+//   }
+//   return true;
+//   } catch (e) {
+//     console.error(e);
+//     return false;
+//   }
+// }
 
 // export const getUserInfo = async () => {
 //   const { data: { user }, error } = await client.auth.getUser();
