@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
 
 function WritePage() {
+  const TMDB_Key = import.meta.env.VITE_TMDB_Key;
+
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -20,11 +22,20 @@ function WritePage() {
     return <div>로그인 정보 확인 중...</div>; 
   }
 
+  const TMDB = async (test: string) => {
+    const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_Key}&query=${test}&language=ko-KR`); // this's search. is this u want?
+    const data = await response.json();
+    // console.log(data); 
+    alert(JSON.stringify(data));
+    // alert(test);
+  }
+
   return (
     <div>
       {/* <h1>글쓰기</h1> */}
-      <p>여기는 점선 땡땡 네모박스 포스터자리 | 여기는 별점 자리</p> {/* 사이즈 다르게 할 거니까 둘이 나눠야됨. 지금은 보기 쉽게 하려고 이렇게 둔거임 */}
-      <textarea placeholder="제목 입력" rows={5} cols={40} />
+      <p>여기는 점선 땡땡 네모박스 포스터자리</p>
+      <div onClick={()=>{ TMDB("soul"); }}>Poster position</div>
+      <textarea placeholder="제목 입력" rows={5} cols={40} /><p>star review position here</p>
       <textarea placeholder="내용을 입력하세요..." rows={5} cols={40} />
       <br />
 
