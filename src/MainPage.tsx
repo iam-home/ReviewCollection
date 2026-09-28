@@ -39,6 +39,7 @@ function MainPage() {
             {/* 프로토타입 이름 */}
             <nav>
                 <ul className="nav-links">
+                <li><a onClick={()=>{ console.log("친구창을 하나 띄우고 거기에 친구 목록 만들고, 친구 추가 버튼도 만들자.") }}>친구</a></li>
                 <li><a onClick={()=> setIsSearch(!isSearch) }>{isSearch ? "검색" : "검색"}</a></li>
                 { session?.user
                 ? <li><a onClick={()=>{ session?.user && console.log("유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈"); }}>{ session.user.email }의 라이브러리</a></li>
