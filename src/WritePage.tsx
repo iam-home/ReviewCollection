@@ -2,10 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
 
+
+
 function WritePage() {
-  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -32,29 +34,24 @@ function WritePage() {
       <br />
 
       <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/', { replace: true }); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
-      <button onClick={()=>{ { isLogin ? <User title={title} content={content}/> : <NotUser title={title}/> }; }}>등록</button> {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* navigate('/'); 이거 일단 뺐음 */}
+      <button onClick={()=>{ Post(isLogin, title, content) }}>등록</button> {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* navigate('/'); 이거 일단 뺐음 */}
 
       {/* 로그인 유저면 User, 비로그인 유저면 NotUser */}
     </div>
   );
 }
-{/* 아니 잠깐 등록을 왜 컴포넌트로 나눈 거임? 함수를 만들어서 그 함수 안에서 로그인 여부 판단하는 거 아님? */}
-const NotUser = (title: any) => { // 비로그인 유저 로컬스토리지
-  // const notUser = JSON.parse(localStorage.getItem('value')) || [];
-  // notUser.unshift(title);
-  // localStorage.setItem('value', JSON.stringify(notUser));
 
-  return (
-    <p>fdsa</p>
-  )
-}
-
-const User = () => { // 로그인 유저 디비
-  return (
-    <div>
-      <p>User</p>
-    </div>
-  )
+const Post = async (isLogin: boolean, title: string, content: string) => {
+  if (isLogin) { // 로그인 유저 디비
+    alert("User");
+    alert(title + content);
+  }
+  else { // 비로그인 유저 로컬스토리지
+    const notUser = JSON.parse(localStorage.getItem('value')) || []; // what is value?
+    notUser.unshift(title);
+    notUser.unshift(content);
+    localStorage.setItem('value', JSON.stringify(notUser));
+  }
 }
 
 const PosterSVG = () => {
