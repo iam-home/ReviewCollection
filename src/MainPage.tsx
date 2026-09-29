@@ -8,6 +8,7 @@ function MainPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [toggleFriendModal, setToggleFriendModal] = useState(false);
   
   useEffect(() => {
     const fetchSession = async () => {
@@ -30,7 +31,7 @@ function MainPage() {
     setSession(null);
   }
 };
-  
+
   return (
     <div className='no-cursor'> {/* 지금은 글 쓰는 것들이 MainPage 함수 밖에 있거나 아예 다른 파일이라 문제는 없는데 혹시 이 함수 안에서 글을 써야되는 일이 생기면 이거 빼야됨. 아닌가 안 빼도 글 쓸 수 있나 정확하지 않음 */}
 <button onClick={ Logout }>일단 로그아웃</button>
@@ -39,7 +40,10 @@ function MainPage() {
             {/* 프로토타입 이름 */}
             <nav>
                 <ul className="nav-links">
-                <li><a onClick={()=>{ console.log("친구창을 하나 띄우고 거기에 친구 목록 만들고, 친구 추가 버튼도 만들자.") }}>친구</a></li>
+                <li><a onClick={()=>{ setToggleFriendModal(true); }}>친구</a></li>
+                { toggleFriendModal && <FriendModal/> }
+                {/* 닫는 거는 삭제 버튼 하나 만드셈 */}
+
                 <li><a onClick={()=> setIsSearch(!isSearch) }>{isSearch ? "검색" : "검색"}</a></li>
                 { session?.user
                 ? <li><a onClick={()=>{ session?.user && console.log("유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈"); }}>{ session.user.email }의 라이브러리</a></li>
@@ -65,15 +69,11 @@ function MainPage() {
                     </ul>
                 )}
             </div>
-
+            
             <button className="write-btn" onClick={()=>{ navigate('/write') }}>🔎 글쓰기</button>
         </div>
 
-        <div className='card'> {/* 책자? 책꽂이? */}
-            <p className='book-card'>여기는 api 연결해서 포스터 / 책표지 띄울듯</p>
-            <p className='book-card'>test</p>
-            <p className='book-card'>test2</p>
-        </div>
+      { session ? <User/> : <NotUser/> }
 
         {/* 색은 질감처리된 초록? 굳이 초록일 필요는 없는데 질감 처리는 있는 게 좋을듯 싶음. 단색이면 심심하잖음 */}
 
@@ -82,5 +82,37 @@ function MainPage() {
 }
 
 const Search = () => <textarea placeholder="찾고 싶은 작품 검색"/>
+
+const User = () => {
+  return (
+    <div className='card'> {/* 책자? 책꽂이? */}
+      <p className='book-card'>여기는 api 연결해서 포스터 / 책표지 띄울듯</p>
+      <p className='book-card'>test</p>
+      <p className='book-card'>test2</p>
+    </div>
+
+  )
+}
+
+const NotUser = () => {
+  const rawData = localStorage.getItem('NotUser_localStorage');
+  const posts: GuestPost[] = rawData ? JSON.parse(rawData) : [];
+
+  for (let i: number = 0; i < posts.length; i++){
+    console.log(posts[i]);
+  }
+// 여다가 포스터를 띄우는 거임. title content 띄우는 게 아니라. 어 근데 제목이 왜 필요함?? 리뷰쓰는데 제목이 왜 필요해
+  return (
+    <p>NotUser</p>
+  )
+}
+
+const FriendModal = () => {
+  return (
+    <div> {/* style={{ position:"absolute" }} */}
+      <input type="text" placeholder="친구창을 하나 띄우고 거기에 친구 목록 만들고, 친구 추가 버튼도 만들자." />
+    </div>
+  )
+}
 
 export default MainPage;
