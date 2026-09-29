@@ -6,6 +6,8 @@ function WritePage() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -24,22 +26,26 @@ function WritePage() {
     <div>
       <PosterSVG/> {/* 얘가 가장 왼쪽으로 가게 css 짜야됨 */}
       {/* <h1>글쓰기</h1> */}
-      <textarea placeholder="제목 입력" rows={5} cols={40} />
+      <textarea placeholder="제목 입력" value={ title } onChange={(e)=> setTitle(e.target.value) } rows={5} cols={40} />
       <p>star review position here</p>
-      <textarea placeholder="내용을 입력하세요..." rows={5} cols={40} />
+      <textarea placeholder="내용을 입력하세요..." value={ content } onChange={(e)=> setContent(e.target.value) } rows={5} cols={40} />
       <br />
 
       <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/', { replace: true }); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
-      <button onClick={()=>{ { isLogin ? <User/> : <NotUser/> }; }}>등록</button> {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* navigate('/'); 이거 일단 뺐음 */}
+      <button onClick={()=>{ { isLogin ? <User title={title} content={content}/> : <NotUser title={title}/> }; }}>등록</button> {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* navigate('/'); 이거 일단 뺐음 */}
 
       {/* 로그인 유저면 User, 비로그인 유저면 NotUser */}
     </div>
   );
 }
+{/* 아니 잠깐 등록을 왜 컴포넌트로 나눈 거임? 함수를 만들어서 그 함수 안에서 로그인 여부 판단하는 거 아님? */}
+const NotUser = (title: any) => { // 비로그인 유저 로컬스토리지
+  // const notUser = JSON.parse(localStorage.getItem('value')) || [];
+  // notUser.unshift(title);
+  // localStorage.setItem('value', JSON.stringify(notUser));
 
-const NotUser = () => { // 비로그인 유저 로컬스토리지
   return (
-    <p>NotUser</p>
+    <p>fdsa</p>
   )
 }
 
@@ -52,6 +58,47 @@ const User = () => { // 로그인 유저 디비
 }
 
 const PosterSVG = () => {
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
+  return (
+  <>
+      { openModal && <SearchModal/> }
+
+      <svg onClick={()=>{ setOpenModal(true); }}
+        width="400"
+        height="600"
+        viewBox="0 0 400 600"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+
+        <rect
+          x="10"
+          y="10"
+          width="380"
+          height="580"
+          rx="18"
+          fill="none"
+          stroke="#9CA3AF"
+          strokeWidth="2"
+          strokeDasharray="8 8"
+          strokeLinecap="round"
+        />
+
+        <g
+          stroke="#6B7280"
+          strokeWidth="3"
+          strokeLinecap="round"
+        >
+          <line x1="200" y1="275" x2="200" y2="325" />
+          <line x1="175" y1="300" x2="225" y2="300" />
+        </g>
+      </svg>
+    </>
+  )
+}
+
+const SearchModal = () => {
+  const [searchPoster, setSearchPoster] = useState('');
   const TMDB_Key = import.meta.env.VITE_TMDB_Key;
 
   const TMDB = async (test: string) => {
@@ -59,40 +106,13 @@ const PosterSVG = () => {
     const data = await response.json();
     // console.log(data); 
     alert(JSON.stringify(data));
-    // alert(test);
   }
 
-
   return (
-  <svg onClick={()=>{ TMDB("soul") }}
-      width="400"
-      height="600"
-      viewBox="0 0 400 600"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* 점선 포스터 영역 */}
-      <rect
-        x="10"
-        y="10"
-        width="380"
-        height="580"
-        rx="18"
-        fill="none"
-        stroke="#9CA3AF"
-        strokeWidth="2"
-        strokeDasharray="8 8"
-        strokeLinecap="round"
-      />
-
-      <g
-        stroke="#6B7280"
-        strokeWidth="3"
-        strokeLinecap="round"
-      >
-        <line x1="200" y1="275" x2="200" y2="325" />
-        <line x1="175" y1="300" x2="225" y2="300" />
-      </g>
-    </svg>
+    <div>
+      <input type="text" value={ searchPoster } onChange={(e) => setSearchPoster(e.target.value) } placeholder="원하는 작품 검색" />
+      <button onClick={()=>{ TMDB(`${searchPoster}`); }}>save</button> {/* 그냥 검색만 하는 게 아니라 포스터를 불러오게 하고, 그 불러온 값을 PosterSVG에 대신 넣으면 될듯 */}
+    </div>
   )
 }
 
