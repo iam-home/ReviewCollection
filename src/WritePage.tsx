@@ -8,8 +8,9 @@ function WritePage() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [title, setTitle] = useState('');
+  const [rating, setRating] = useState<number>();
   const [content, setContent] = useState('');
+  // const [selectedPoster, SetSelectedPoster] = useState('');
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -26,15 +27,17 @@ function WritePage() {
 
   return (
     <div>
-      <PosterSVG/> {/* 얘가 가장 왼쪽으로 가게 css 짜야됨 */}
       {/* <h1>글쓰기</h1> */}
-      <textarea placeholder="제목 입력" value={ title } onChange={(e)=> setTitle(e.target.value) } rows={5} cols={40} />
-      <p>star review position here</p>
+      <PosterSVG/> {/* 얘가 가장 왼쪽으로 가게 css 짜야됨 */}
+      <Title/>
+
+      <textarea placeholder='별점 입력하셈' value={ rating } onChange={(e)=> setRating(e.target.value) } />
       <textarea placeholder="내용을 입력하세요..." value={ content } onChange={(e)=> setContent(e.target.value) } rows={5} cols={40} />
+      {/* <textarea placeholder='포스터 url' value={ selectedPoster } onChange={(e)=> SetSelectedPoster(e.target.value) } rows="{5}" cols="{40}" /> */}
       <br />
 
       <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/', { replace: true }); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
-      <button onClick={async ()=>{ if ( await Post(isLogin, title, content) ) navigate('/', { replace: true }); }}>등록</button>
+      <button onClick={async ()=>{ if ( await Post(isLogin, rating, content) ) navigate('/', { replace: true }); }}>등록</button>
       {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* 되기는 되는데 등록 버튼 누르자마자 너무 갑자기 띡 넘어가니까 좀 어색함 */}
 
       {/* 로그인 유저면 User, 비로그인 유저면 NotUser */}
@@ -42,7 +45,7 @@ function WritePage() {
   );
 }
 
-const Post = async (isLogin: boolean, title: string, content: string) => {
+const Post = async (isLogin: boolean, rating: number, content: string) => {
   if (isLogin) { // 로그인 유저 디비
 
   }
@@ -57,7 +60,7 @@ const Post = async (isLogin: boolean, title: string, content: string) => {
     const existingPosts: NotUserPost[] = rawData ? JSON.parse(rawData) : [];
 
     const newPost: GuestPost = {
-      title,
+      rating,
       content,
       // createdAt: new Date().toISOString(),
     };
@@ -106,6 +109,12 @@ const PosterSVG = () => {
         </g>
       </svg>
     </>
+  )
+}
+
+const Title = () => {
+  return (
+    <p>밑에 제목이랑 감독/저자 뭐 그런 거 띄우고 싶은데 이걸 컴포넌트로 나눠야되냐. SearchModal에서 아예 정보 다 빼서 파라미터로 넘기는 게 깔끔하려나 아니면 SearchModal에서 전부 다 처리를 하면 안되나</p>
   )
 }
 

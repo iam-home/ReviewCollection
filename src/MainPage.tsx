@@ -103,7 +103,9 @@ const NotUser = () => {
   }
 // 여다가 포스터를 띄우는 거임. title content 띄우는 게 아니라. 어 근데 제목이 왜 필요함?? 리뷰쓰는데 제목이 왜 필요해
   return (
-    <p>NotUser</p>
+    <div className='card'>
+      <p className='book-card'></p>
+    </div>
   )
 }
 
