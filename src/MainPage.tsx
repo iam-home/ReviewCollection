@@ -105,7 +105,7 @@ const NotUser = () => {
     if (data) {
       const parsedData = JSON.parse(data);
       setSavedDate(parsedData);
-      alert(JSON.stringify(parsedData));
+      console.log(JSON.stringify(parsedData));
     }
     else { setSavedDate('저장된 데이터가 없습니다.'); alert("fdsa") }
   }, []);

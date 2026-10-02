@@ -1,7 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
-
+interface Data {
+      subject: string,
+      images: string,
+      title: string,
+      creator: string,
+      rating: number,
+      content: string;
+      // createdAt: string;
+    }
 function WritePage() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -10,6 +18,7 @@ function WritePage() {
   const [selectedSubject, setSelectedSubject] = useState('');
   const [rating, setRating] = useState<number>();
   const [content, setContent] = useState('');
+  const [forAPI, setForAPI] = useState<Data | null>(null);
   // const [selectedPoster, SetSelectedPoster] = useState('');
 
   useEffect(() => {
@@ -41,13 +50,22 @@ function WritePage() {
       <PosterSVG selectedSubject={ selectedSubject }/> {/* 얘가 가장 왼쪽으로 가게 css 짜야됨 */}
       <Title/>
 
-      <textarea placeholder='별점 입력하셈' value={ rating } onChange={(e)=> setRating(e.target.value) } />
+      {/* <textarea placeholder='별점 입력하셈' value={ rating } onChange={(e)=> setRating(e.target.value) } /> */}
+      <input type="number"
+      min="1" max="5" step="0.5"
+      placeholder='별점 입력하셈'
+      value={rating ?? ''}
+      onChange={(e) => {
+        const val = e.target.value;
+        setRating(val === '' ? undefined : Number(val));
+      }} />
+      
       <textarea placeholder="내용을 입력하세요..." value={ content } onChange={(e)=> setContent(e.target.value) } rows={5} cols={40} />
       {/* <textarea placeholder='포스터 url' value={ selectedPoster } onChange={(e)=> SetSelectedPoster(e.target.value) } rows="{5}" cols="{40}" /> */}
       <br />
 
       <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/', { replace: true }); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
-      <button onClick={async ()=>{ if ( await Post(isLogin, rating, content) ) navigate('/', { replace: true }); }}>등록</button>
+      <button onClick={async ()=>{ if ( await Post(isLogin, rating ?? 0, content) ) navigate('/', { replace: true }); }}>등록</button>
       {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* 되기는 되는데 등록 버튼 누르자마자 너무 갑자기 띡 넘어가니까 좀 어색함 */}
 
       {/* 로그인 유저면 User, 비로그인 유저면 NotUser */}
@@ -55,45 +73,34 @@ function WritePage() {
   );
 }
 
+
 const Post = async (isLogin: boolean, rating: number, content: string) => {
   if (isLogin) { // 로그인 유저 디비
     
   }
-
+  
   else { // 비로그인 유저 로컬스토리지
-    interface NotUserPost {
-      subject: string,
-      images: string,
-      title: string,
-      creator: string,
-      rating: number,
-      content: string;
-      // createdAt: string;
-    }
     const rawData = localStorage.getItem('NotUser_localStorage');
 
-    const existingPosts: NotUserPost[] = rawData ? JSON.parse(rawData) : [];
-    // let existingPosts: NotUserPost[] = [];
-    // if (rawData) {
-    //   try {
-    //     existingPosts = JSON.parse(rawData);
-    //     if (!Array.isArray(existingPosts)) {
-    //       existingPosts = [];
-    //     }
-    //   } catch (error) {
-    //     alert(error);
-    //     existingPosts = [];
-    //   }
-    // }
+    // const existingPosts: NotUserPost[] = rawData ? JSON.parse(rawData) : [];
+    let existingPosts: Data[] = [];
+    if (rawData) {
+      try {
+        existingPosts = Array.isArray( JSON.parse(rawData) ) ? JSON.parse(rawData) : [];
+      } catch (error) {
+        console.error(error);
+        existingPosts = [];
+      }
+    }
 
     // 여기 뭔가 문제가 있음
-    const newPost: GuestPost = {
-      subject: subjectValue,
-      images: imagesValue,
-      title: titleValue,
-      creator: creatorValue,
-      rating: creatorValue,
-      content: contentValue,
+    const newPost: Data[] = {
+      subject: selectedSubject,
+      images: selectedPoster,
+      title: title,
+      creator: creator,
+      rating: rating, // number
+      content: content,
     }; 
     // createdAt: new Date().toISOString(),
     // 주제, 표지, 작품 이름, 작가/감독, 별점, 내용
