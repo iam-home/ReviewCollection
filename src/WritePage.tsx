@@ -2,12 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
 
-
-
 function WritePage() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [rating, setRating] = useState<number>();
   const [content, setContent] = useState('');
   // const [selectedPoster, SetSelectedPoster] = useState('');
@@ -28,7 +28,17 @@ function WritePage() {
   return (
     <div>
       {/* <h1>글쓰기</h1> */}
-      <PosterSVG/> {/* 얘가 가장 왼쪽으로 가게 css 짜야됨 */}
+      <div className='dropdown-container'>
+        <p className='dropdown-btn' onClick={()=>{ setIsOpen(!isOpen) }}>choose</p>
+        { isOpen &&  
+          <ul className='dropdown-menu'>
+            <li><a onClick={()=>{ setSelectedSubject('movie'); setIsOpen(false); }}>movies</a></li>
+            <li><a onClick={()=>{ setSelectedSubject('book'); setIsOpen(false); }}>books</a></li>
+            <li><a onClick={()=>{ setSelectedSubject('music'); setIsOpen(false); }}>musics</a></li>
+          </ul>
+        }
+      </div>
+      <PosterSVG selectedSubject={ selectedSubject }/> {/* 얘가 가장 왼쪽으로 가게 css 짜야됨 */}
       <Title/>
 
       <textarea placeholder='별점 입력하셈' value={ rating } onChange={(e)=> setRating(e.target.value) } />
@@ -47,37 +57,61 @@ function WritePage() {
 
 const Post = async (isLogin: boolean, rating: number, content: string) => {
   if (isLogin) { // 로그인 유저 디비
-
+    
   }
 
   else { // 비로그인 유저 로컬스토리지
     interface NotUserPost {
-      title: string;
+      subject: string,
+      images: string,
+      title: string,
+      creator: string,
+      rating: number,
       content: string;
       // createdAt: string;
     }
     const rawData = localStorage.getItem('NotUser_localStorage');
+
     const existingPosts: NotUserPost[] = rawData ? JSON.parse(rawData) : [];
+    // let existingPosts: NotUserPost[] = [];
+    // if (rawData) {
+    //   try {
+    //     existingPosts = JSON.parse(rawData);
+    //     if (!Array.isArray(existingPosts)) {
+    //       existingPosts = [];
+    //     }
+    //   } catch (error) {
+    //     alert(error);
+    //     existingPosts = [];
+    //   }
+    // }
 
+    // 여기 뭔가 문제가 있음
     const newPost: GuestPost = {
-      rating,
-      content,
-      // createdAt: new Date().toISOString(),
-    };
-
+      subject: subjectValue,
+      images: imagesValue,
+      title: titleValue,
+      creator: creatorValue,
+      rating: creatorValue,
+      content: contentValue,
+    }; 
+    // createdAt: new Date().toISOString(),
+    // 주제, 표지, 작품 이름, 작가/감독, 별점, 내용
+    
     const updatedPosts = [newPost, ...existingPosts];
     localStorage.setItem('NotUser_localStorage', JSON.stringify(updatedPosts));
 
     return true;
+    // alert(newPost)
   }
 }
 
-const PosterSVG = () => {
+const PosterSVG = ( {selectedSubject}: {selectedSubject: string} ) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   return (
   <>
-      { openModal && <SearchModal/> }
+      { openModal && <SearchModal selectedSubject = {selectedSubject} /> }
 
       <svg onClick={()=>{ setOpenModal(true); }}
         width="400"
@@ -118,22 +152,42 @@ const Title = () => {
   )
 }
 
-const SearchModal = () => {
-  const [searchPoster, setSearchPoster] = useState('');
-  const TMDB_Key = import.meta.env.VITE_TMDB_Key;
+const SearchModal = ( {selectedSubject}: {selectedSubject: string} ) => {
+  const [value, setValue] = useState('');
+  // const [searchMovie, setSearchMovie] = useState('');
+  // const [searchBook, setSearchBook] = useState('');
+  // const [searchMusic, setSearchMusic] = useState('');
+  const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
+  const KAKAO_KEY = import.meta.env.VITE_KAKAO_KEY;
 
-  const TMDB = async (test: string) => {
-    const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_Key}&query=${test}&language=ko-KR`); // this's search. is this u want?
-    const data = await response.json();
-    // console.log(data); 
-    alert(JSON.stringify(data));
+  const options = async (value: string) => {
+    if (selectedSubject === "movie") {
+      const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${value}&language=ko-KR`); // this's search. is this u want?
+      const data = await response.json();
+      // console.log(data); 
+      alert(JSON.stringify(data));
+    }
+
+    else if (selectedSubject === "book") {
+      const response = await fetch(`https://dapi.kakao.com/v3/search/book?query=${value}`, {
+        method: 'GET',
+        headers: { 'Authorization': `KakaoAK ${KAKAO_KEY}` }
+      });
+      const data = await response.json();
+      alert(JSON.stringify(data));
+    }
+    
+    else if (selectedSubject === "music") {
+      alert(selectedSubject + value);
+    }
+  
   }
 
   return (
     <div>
-      <input type="text" value={ searchPoster } onChange={(e) => setSearchPoster(e.target.value) } placeholder="원하는 작품 검색" />
-      <button onClick={()=>{ TMDB(`${searchPoster}`); }}>save</button> {/* 그냥 검색만 하는 게 아니라 포스터를 불러오게 하고, 그 불러온 값을 PosterSVG에 대신 넣으면 될듯 */}
-    </div>
+      <input type="text" value={ value } onChange={(e) => setValue(e.target.value) } placeholder="원하는 작품 검색" />
+      <button onClick={()=>{ options(`${value}`); }}>save</button> {/* 그냥 검색만 하는 게 아니라 포스터를 불러오게 하고, 그 불러온 값을 PosterSVG에 대신 넣으면 될듯 */}
+    </div> // 로컬스토리지든 디비든 표지 저장하고 -> 메인 페이지에 띄우게 하기
   )
 }
 

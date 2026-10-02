@@ -72,7 +72,7 @@
   margin-top: 8px;
   padding: 8px 0;
   width: 160px;
-  
+
   background-color: rgba(20, 36, 29, 0.95); 
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
@@ -81,25 +81,26 @@
   z-index: 10;
 }
 
-.dropdown-menu li a, 
-.dropdown-menu li button {
-  display: block;
-  padding: 10px 16px;
-  color: #d1d5db;
-  text-decoration: none;
-  font-size: 14px;
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-}
+.dropdown-menu li a,
+ .dropdown-menu li button { 
+   display: block; 
+   padding: 10px 16px; 
+   color: #d1d5db; 
+   text-decoration: none; 
+   font-size: 14px; 
+   background: none; 
+   border: none; 
+   /* width: 100%;  */
+   /* 초록 네모 비율 이상한 거 범인 찾음 */
+   text-align: left; 
+   cursor: pointer; 
+ } 
 
-.dropdown-menu li a:hover, 
-.dropdown-menu li button:hover {
-  /* background-color: rgba(52, 211, 153, 0.1); */ /* 이거 사이즈도 이상한데 굳이 넣어야될까 싶음 */
-  color: #34d399;
-}
+.dropdown-menu li a:hover,
+ .dropdown-menu li button:hover { 
+   background-color: rgba(52, 211, 153, 0.1); 
+   color: #34d399; 
+ } 
 
 .write-btn {
   background-color: #059627; /* 이건 좀 별로같은데 */
