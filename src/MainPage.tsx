@@ -66,7 +66,7 @@ function MainPage() {
                     <ul className="dropdown-menu">
                         <li><a onClick={()=>{ console.log("영화만 모아서 보여주기"); setIsOpen(false); }}>영화</a></li>
                         <li><a onClick={()=>{ console.log("책만 모아서 보여주기"); setIsOpen(false); }}>책</a></li>
-                        <li><a onClick={()=>{ console.log("음악만 모아서 보여주기"); setIsOpen(false); }}>음악</a></li>
+                        {/* <li><a onClick={()=>{ console.log("음악만 모아서 보여주기"); setIsOpen(false); }}>음악</a></li> */}
                     </ul>
                 )}
             </div>
@@ -98,7 +98,7 @@ const User = () => {
 const NotUser = () => {
   const [savedData, setSavedDate] = useState('');
   // const rawData = localStorage.getItem('NotUser_localStorage');
-  // const posts: GuestPost[] = rawData ? JSON.parse(rawData) : [];
+  // const posts = rawData ? JSON.parse(rawData) : [];
 
   useEffect(() => {
     const data = localStorage.getItem('NotUser_localStorage');
@@ -107,17 +107,20 @@ const NotUser = () => {
       setSavedDate(parsedData);
       console.log(JSON.stringify(parsedData));
     }
-    else { setSavedDate('저장된 데이터가 없습니다.'); alert("fdsa") }
+    else setSavedDate('저장된 데이터가 없습니다.');
   }, []);
 
   // for (let i: number = 0; i < posts.length; i++){
   //   console.log(posts[i]);
   // }
-// 여다가 포스터를 띄우는 거임. title content 띄우는 게 아니라. 어 근데 제목이 왜 필요함?? 리뷰쓰는데 제목이 왜 필요해
+
   return (
     <div className='card'>
       {/* {savedData.content} */}
       {/* {savedData} */}
+      
+      {JSON.stringify(savedData)}
+      {/* {JSON.stringify(posts)} 엥 posts로 해도 되는데 */}
     </div>
   )
 }
