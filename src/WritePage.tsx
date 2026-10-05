@@ -3,15 +3,16 @@ import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
 
 interface DataProps {
-      subject: string,
-      images: string,
-      title: string,
-      creator: string,
-      rating: number,
-      content: string;
-      // createdAt: string; // createdAt: new Date().toISOString(),
-      // 주제, 표지, 작품 이름, 작가/감독, 별점, 내용
-    }
+  subject: string,
+  images: string,
+  title: string,
+  releaseDate: string,
+  creator: string,
+  rating: number,
+  content: string;
+  // createdAt: string; // createdAt: new Date().toISOString(),
+  // 주제, 표지, 작품 이름, 작가/감독, 별점, 내용
+}
 
 function WritePage() {
   const navigate = useNavigate();
@@ -31,9 +32,9 @@ function WritePage() {
     };
     fetchSession();
   }, []);
-  
+
   if (loading) {
-    return <div>로그인 정보 확인 중...</div>; 
+    return <div>로그인 정보 확인 중...</div>;
   }
 
   const handleRegister = async () => {
@@ -56,49 +57,50 @@ function WritePage() {
       content: content,
     };
 
-    if ( await Post(isLogin, PostData) ) navigate('/', { replace: true });
+    if (await Post(isLogin, PostData)) navigate('/', { replace: true });
   };
 
   return (
     <div>
       {/* <h1>글쓰기</h1> */}
       <div className='dropdown-container'>
-        <p className='dropdown-btn' onClick={()=>{ setIsOpen(!isOpen) }}>{selectedSubject || 'choose'}</p>
-        { isOpen &&  
+        <p className='dropdown-btn' onClick={() => { setIsOpen(!isOpen) }}>{selectedSubject || 'choose'}</p>
+        {isOpen &&
           <ul className='dropdown-menu'>
-            <li><a onClick={()=>{ setSelectedSubject('movie'); setIsOpen(false); }}>movies</a></li>
-            <li><a onClick={()=>{ setSelectedSubject('book'); setIsOpen(false); }}>books</a></li>
+            <li><a onClick={() => { setSelectedSubject('movie'); setIsOpen(false); }}>movies</a></li>
+            <li><a onClick={() => { setSelectedSubject('book'); setIsOpen(false); }}>books</a></li>
             {/* <li><a onClick={()=>{ setSelectedSubject('music'); setIsOpen(false); }}>musics</a></li> */}
           </ul>
         }
       </div>
       <PosterSVG
-        selectedSubject={ selectedSubject }
-        forAPI={ forAPI }
-        setForAPI={ setForAPI }
-        />
+        selectedSubject={selectedSubject}
+        forAPI={forAPI}
+        setForAPI={setForAPI}
+      />
 
-      { forAPI && (
+      {forAPI && (
         <div className='selected-info'>
-          <h3>{forAPI.title}</h3>
-          <p>{forAPI.creator}</p>
+          <strong>{forAPI.title}</strong> {forAPI.creator}
         </div>
       )}
 
       <input type="number"
-      min="1" max="5" step="0.5"
-      placeholder='별점 입력하셈'
-      value={rating ?? ''}
-      onChange={(e) => {
-        const val = e.target.value;
-        setRating(val === '' ? undefined : Number(val));
-      }} />
-      
-      <textarea placeholder="내용을 입력하세요..." value={ content } onChange={(e)=> setContent(e.target.value) } rows={5} cols={40} />
+        min="1" max="5" step="0.5"
+        placeholder='별점 입력하셈'
+        value={rating ?? ''}
+        onChange={(e) => {
+          const val = e.target.value;
+          setRating(val === '' ? undefined : Number(val));
+        }} />
+
+      <p>완독 날짜를 입력해라</p>
+
+      <textarea placeholder="내용을 입력하세요..." value={content} onChange={(e) => setContent(e.target.value)} rows={5} cols={40} />
       <br />
 
       <button onClick={() => { if (confirm("진짜 취소함?")) navigate('/', { replace: true }); }}>취소</button> {/* 이거 또 뒤로가기 불편함 */}
-      <button onClick={ handleRegister }>등록</button>
+      <button onClick={handleRegister}>등록</button>
       {/* 작게 안내창? toast?을 띄우든하셈. alert보다는 나을겨 */} {/* 되기는 되는데 등록 버튼 누르자마자 너무 갑자기 띡 넘어가니까 좀 어색함 */}
 
       {/* 로그인 유저면 User, 비로그인 유저면 NotUser */}
@@ -109,9 +111,9 @@ function WritePage() {
 
 const Post = async (isLogin: boolean, PostData: DataProps) => {
   if (isLogin) { // 로그인 유저 디비
-    
+
   }
-  
+
   else { // 비로그인 유저 로컬스토리지
     const rawData = localStorage.getItem('NotUser_localStorage');
 
@@ -119,13 +121,13 @@ const Post = async (isLogin: boolean, PostData: DataProps) => {
     let existingPosts: DataProps[] = [];
     if (rawData) {
       try {
-        existingPosts = Array.isArray( JSON.parse(rawData) ) ? JSON.parse(rawData) : [];
+        existingPosts = Array.isArray(JSON.parse(rawData)) ? JSON.parse(rawData) : [];
       } catch (error) {
         console.error(error);
         existingPosts = [];
       }
     }
-    
+
     const updatedPosts = [PostData, ...existingPosts];
     localStorage.setItem('NotUser_localStorage', JSON.stringify(updatedPosts));
 
@@ -142,19 +144,19 @@ const PosterSVG = ({
   selectedSubject: string,
   forAPI: DataProps | null,
   setForAPI: React.Dispatch<React.SetStateAction<DataProps | null>>;
-  }) => {
+}) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   return (
     <>
-      { openModal && (
-        <SearchModal selectedSubject = {selectedSubject}
-        onClose={()=> setOpenModal(false) }
-        onSelectMedia={ (mediaData) => setForAPI(mediaData) }
+      {openModal && (
+        <SearchModal selectedSubject={selectedSubject}
+          onClose={() => setOpenModal(false)}
+          onSelectMedia={(mediaData) => setForAPI(mediaData)}
         />
       )}
 
-      <div onClick={()=>{
+      <div onClick={() => {
         if (!selectedSubject) {
           alert("카테고리를 먼저 선택해주세요.");
           return;
@@ -200,21 +202,37 @@ const SearchModal = ({
     if (selectedSubject === "movie") {
       const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(value)}&language=ko-KR`);
       const data = await response.json();
-      setSearchResults(data.results || []);
+      // setSearchResults(data.results || []);
       // console.log(JSON.stringify(data));
+      const movieResults = data.results || [];
+
+      const moviesWithCredits = await Promise.all(
+        movieResults.map(async (movie: any) => {
+          try {
+            const detailRes = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_KEY}&language=ko-KR&append_to_response=credits`);
+            const detailData = await detailRes.json();
+            return { ...movie, crew: detailData.credits?.crew || [] };
+          } catch (error) {
+            return movie;
+          }
+        })
+      );
+
+      setSearchResults(moviesWithCredits);
     }
+
 
     else if (selectedSubject === "book") {
       const response = await fetch(`https://dapi.kakao.com/v3/search/book?query=${encodeURIComponent(value)}`,
-      {
-        method: 'GET',
-        headers: { 'Authorization': `KakaoAK ${KAKAO_KEY}` }
-      });
+        {
+          method: 'GET',
+          headers: { 'Authorization': `KakaoAK ${KAKAO_KEY}` }
+        });
       const data = await response.json();
-      setSearchResults(data.results || []);
+      setSearchResults(data.documents || []);
       console.log(JSON.stringify(data));
     }
-    
+
     // else if (selectedSubject === "music") {
     //   // alert(selectedSubject + value);
 
@@ -223,23 +241,25 @@ const SearchModal = ({
     //   // setSearchResults(data.results || []);
     //   // console.log(JSON.stringify(data));
     // }
-  
+
   }
 
   return (
     <div className="modal-background" style={{ border: '1px solid black', padding: '10px', background: '#fff' }}>
-      <input type="text" value={ value } onChange={(e) => setValue(e.target.value) } placeholder="원하는 작품 검색" />
-      <button onClick={ handleSearch }>확인</button>
-{/* 책은 아예 뜨지도 않음 */}
+      <input type="text" value={value} onChange={(e) => setValue(e.target.value)} placeholder="원하는 작품 검색" />
+      <button onClick={handleSearch}>확인</button>
+
       <div className="results-list" style={{ marginTop: '10px' }}>
         {searchResults.map((item, index) => {
           const title = selectedSubject === 'movie' ? item.title : item.title;
-          const images = selectedSubject === 'movie' 
-            ? (item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '')
-            : item.thumbnail;
-          const creator = selectedSubject === 'movie' // 크리에이터가 안 나오고 개봉 날짜가 나옴
-            ? (item.release_date || '개봉일 미상')
-            : (item.authors?.join(', ') || '저자 미상');
+          const images = selectedSubject === 'movie' ? (item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '') : item.thumbnail;
+          const creator = selectedSubject === 'movie'
+            ? (item?.crew?.find((member: { job: string; name: string; }) => member.job === 'Director')?.name || '감독 미상')
+            : (item.authors && item.authors.length > 0 ? item.authors.join(', ') : '저자 미상');
+          const releaseDate = selectedSubject === 'movie' ? (item.release_date) : (item.datetime ? item.datetime.substr(0, 10) : '출판일 미상');
+
+          {/* 영화로 검색해둔 다음에 책으로 바꾸면 이상해짐. 기능상 오류는 없는데 그냥 기분나빠짐. 반대 경우도 똑같음 */ }
+          {/*  검색창에도 작게 표지 띄우셈*/ }
 
           return (
             <div
@@ -249,6 +269,7 @@ const SearchModal = ({
                   subject: selectedSubject,
                   images: images,
                   title: title,
+                  releaseDate: releaseDate,
                   creator: creator,
                   rating: 0,
                   content: '',
@@ -257,14 +278,14 @@ const SearchModal = ({
               }}
               style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid #eee' }}
             >
-              <strong>{title}</strong> ({creator})
+              <strong>{title}</strong> ({releaseDate})
             </div>
           );
         })}
       </div>
-      <button onClick={ onClose }>닫기</button>
+      <button onClick={onClose}>닫기</button>
     </div> // 로컬스토리지든 디비든 표지 저장하고 -> 메인 페이지에 띄우게 하기
   );
 };
 
-export default WritePage; {/* 제목 내용 하나라도 공백이면 빠꾸 잊지말자 */}
+export default WritePage;
