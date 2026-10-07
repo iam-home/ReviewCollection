@@ -1,18 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
-
-interface DataProps {
-  subject: string,
-  images: string,
-  title: string,
-  releaseDate: string,
-  creator: string,
-  rating: number,
-  content: string;
-  // createdAt: string; // createdAt: new Date().toISOString(),
-  // 주제, 표지, 작품 이름, 작가/감독, 별점, 내용
-}
+import { type DataProps } from './App.tsx';
 
 function WritePage() {
   const navigate = useNavigate();

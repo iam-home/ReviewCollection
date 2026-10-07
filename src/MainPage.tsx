@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { client, checkLogin } from './supabaseClient.ts';
+import { type DataProps } from './App.tsx';
 
 function MainPage() {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ const User = () => {
 const NotUser = () => {
   // const [savedData, setSavedDate] = useState('');
   const rawData = localStorage.getItem('NotUser_localStorage');
-  const posts = rawData ? JSON.parse(rawData) : [];
+  const posts: DataProps[] = rawData ? JSON.parse(rawData) : [];
 
   // useEffect(() => {
   //   const data = localStorage.getItem('NotUser_localStorage');
@@ -122,25 +123,45 @@ const NotUser = () => {
 
   return (
     <div className='main-container'>
+      {/* <svg xmlns="http://w3.org" viewBox="0 0 400 300" width="100%" height="100%"> */}
+      {/*   <rect width="400" height="300" rx="16" fill="#F3F4F6" /> */}
+      {/**/}
+      {/*   <g fill="none" stroke="#9CA3AF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"> */}
+      {/*     <rect x="120" y="80" width="160" height="120" rx="12" /> */}
+      {/*     <polygon points="185,115 185,165 225,140" fill="#9CA3AF" /> */}
+      {/*   </g> */}
+      {/**/}
+      {/*   <text x="200" y="240" fontFamily="system-ui, sans-serif" fontSize="14" fontWeight="500" fill="#9CA3AF" textAnchor="middle">No Media Available</text> */}
+      {/* </svg> */}
+
+      {/* <svg xmlns="http://w3.org" viewBox="0 0 400 300" width="100%" height="100%"> */}
+      {/*   <rect width="400" height="300" rx="16" fill="#F3F4F6" /> */}
+      {/*   <g fill="none" stroke="#9CA3AF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"> */}
+      {/*     <path d="M200,180 C170,150 140,150 110,150 L110,90 C140,90 170,90 200,120 Z" /> */}
+      {/*     <path d="M200,180 C230,150 260,150 290,150 L290,90 C260,90 230,90 200,120 Z" /> */}
+      {/*     <path d="M200,120 L200,195 L208,187 L216,195 L216,133" fill="#9CA3AF" stroke="none" /> */}
+      {/*   </g> */}
+      {/*   <text x="200" y="230" fontFamily="system-ui, sans-serif" fontSize="14" fontWeight="500" fill="#9CA3AF" textAnchor="middle">No Image Available</text> */}
+      {/* </svg> */}
+
       <div className='media-grid'>
-        {posts.map((item: string, index: number) => (
+        {posts.map((item: DataProps, index: number) => (
           <div>
             <div key={index} className="media-card">
 
-              {/* 상단: 이미지 영역 (없을 경우를 대비한 처리가 필요합니다) */}
+              {/* 상단 */}
               <div className="image-wrapper">
-                {item.image ? (
-                  <img src={item.image} alt={item.title} className="media-image" />
+                {item.images ? (
+                  <img src={item.images} alt={item.title} className="media-image" />
                 ) : (
                   <div className="no-image">No Image</div>
-                )}
+                )} {/* selectedSubject로 영화인지 책인지 */}
               </div>
 
-              {/* 하단: 텍스트 정보 영역 */}
+              {/* 하단 */}
               <div className="info-wrapper">
                 <h3 className="media-title">{item.title}</h3>
                 <p className="media-creator">{item.creator}</p>
-                {/* 필요 시 개봉일/출판일도 작게 표시 가능 */}
                 {item.releaseDate && <span className="media-date">{item.releaseDate}</span>}
               </div>
 
