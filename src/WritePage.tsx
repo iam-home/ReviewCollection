@@ -11,6 +11,7 @@ function WritePage() {
   const [selectedSubject, setSelectedSubject] = useState('');
   const [rating, setRating] = useState<number>();
   const [content, setContent] = useState('');
+  const [date, setDate] = useState('');
   const [forAPI, setForAPI] = useState<DataProps | null>(null);
 
   useEffect(() => {
@@ -21,6 +22,25 @@ function WritePage() {
     };
     fetchSession();
   }, []);
+
+  useEffect(() => {
+    setForAPI(null);
+  }, [selectedSubject]);
+
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setIsOpen(false);
+    };
+
+    if (isOpen) {
+      window.addEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      window.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isOpen]);
+
 
   if (loading) {
     return <div>로그인 정보 확인 중...</div>;
@@ -44,16 +64,18 @@ function WritePage() {
       ...forAPI,
       rating: rating,
       content: content,
+      date: date,
     };
 
     if (await Post(isLogin, PostData)) navigate('/', { replace: true });
+    // await Post(isLogin, PostData);
   };
 
   return (
     <div>
       {/* <h1>글쓰기</h1> */}
       <div className='dropdown-container'>
-        <p className='dropdown-btn' onClick={() => { setIsOpen(!isOpen) }}>{selectedSubject || 'choose'}</p>
+        <p className='dropdown-btn' onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen) }}>{selectedSubject || '영화 / 도서 선택'}</p>
         {isOpen &&
           <ul className='dropdown-menu'>
             <li><a onClick={() => { setSelectedSubject('movie'); setIsOpen(false); }}>movies</a></li>
@@ -62,6 +84,7 @@ function WritePage() {
           </ul>
         }
       </div>
+
       <PosterSVG
         selectedSubject={selectedSubject}
         forAPI={forAPI}
@@ -83,7 +106,13 @@ function WritePage() {
           setRating(val === '' ? undefined : Number(val));
         }} />
 
-      <p>완독 날짜를 입력해라</p>
+      <input type="date"
+        placeholder='완독 날짜를 입력하세요.'
+        value={date ?? ''}
+        onChange={(e) => {
+          const val = e.target.value;
+          setDate(val === '' ? '' : val);
+        }} />
 
       <textarea placeholder="내용을 입력하세요..." value={content} onChange={(e) => setContent(e.target.value)} rows={5} cols={40} />
       <br />
@@ -181,6 +210,11 @@ const SearchModal = ({
   const [value, setValue] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
+  useEffect(() => {
+    setValue('');
+    setSearchResults([]);
+  }, [selectedSubject]);
+
   const TMDB_KEY = import.meta.env.VITE_TMDB_KEY;
   const KAKAO_KEY = import.meta.env.VITE_KAKAO_KEY;
   // const () = import.meta.env.VITE_();
@@ -219,7 +253,7 @@ const SearchModal = ({
         });
       const data = await response.json();
       setSearchResults(data.documents || []);
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
     }
 
     // else if (selectedSubject === "music") {
@@ -240,12 +274,14 @@ const SearchModal = ({
 
       <div className="results-list" style={{ marginTop: '10px' }}>
         {searchResults.map((item, index) => {
-          const title = selectedSubject === 'movie' ? item.title : item.title;
+          const id = selectedSubject === 'movie' ? String(item.id) : item.isbn;
+          const title = item.title;
           const images = selectedSubject === 'movie' ? (item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '') : item.thumbnail;
           const creator = selectedSubject === 'movie'
             ? (item?.crew?.find((member: { job: string; name: string; }) => member.job === 'Director')?.name || '감독 미상')
             : (item.authors && item.authors.length > 0 ? item.authors.join(', ') : '저자 미상');
           const releaseDate = selectedSubject === 'movie' ? (item.release_date) : (item.datetime ? item.datetime.substr(0, 10) : '출판일 미상');
+          {/* const date = selectedSubject === 'movie' ? item.date : item.date; */ }
 
           {/* 영화로 검색해둔 다음에 책으로 바꾸면 이상해짐. 기능상 오류는 없는데 그냥 기분나빠짐. 반대 경우도 똑같음 */ }
           {/*  검색창에도 작게 표지 띄우셈*/ }
@@ -255,6 +291,7 @@ const SearchModal = ({
               key={index}
               onClick={() => {
                 onSelectMedia({
+                  id: id,
                   subject: selectedSubject,
                   images: images,
                   title: title,
@@ -262,6 +299,7 @@ const SearchModal = ({
                   creator: creator,
                   rating: 0,
                   content: '',
+                  date: '',
                 });
                 onClose();
               }}

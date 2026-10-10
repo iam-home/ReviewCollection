@@ -6,10 +6,11 @@ import { type DataProps } from './App.tsx';
 function MainPage() {
   const navigate = useNavigate();
   const [isSearch, setIsSearch] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [toggleFriendModal, setToggleFriendModal] = useState(false);
+  // const [subject, SetSubject] = useState('');
+  // const [toggleFriendModal, setToggleFriendModal] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -41,8 +42,8 @@ function MainPage() {
         {/* 프로토타입 이름 */}
         <nav>
           <ul className="nav-links">
-            <li><a onClick={() => { setToggleFriendModal(true); }}>친구</a></li>
-            {toggleFriendModal && <FriendModal />}
+            {/* <li><a onClick={() => { setToggleFriendModal(true); }}>친구</a></li> */}
+            {/* {toggleFriendModal && <FriendModal />} */}
             {/* 닫는 거는 삭제 버튼 하나 만드셈 */}
 
             <li><a onClick={() => setIsSearch(!isSearch)}>{isSearch ? "검색" : "검색"}</a></li>
@@ -60,17 +61,17 @@ function MainPage() {
       {isSearch && <Search />}
 
       <div className='ctrl'>
-        <div className="dropdown-container">
-          <p id='filter-text' className="dropdown-btn" onClick={() => { setIsOpen(!isOpen) }}>필터</p>
-          {/* 다른 곳 눌렀을 때 메뉴 안 없어짐. 없어지게 하셈. lostnfound 위치 선택하는 거기에 이거 있지않냐 */}
-          {isOpen && (
-            <ul className="dropdown-menu">
-              <li><a onClick={() => { console.log("영화만 모아서 보여주기"); setIsOpen(false); }}>영화</a></li>
-              <li><a onClick={() => { console.log("책만 모아서 보여주기"); setIsOpen(false); }}>책</a></li>
-              {/* <li><a onClick={()=>{ console.log("음악만 모아서 보여주기"); setIsOpen(false); }}>음악</a></li> */}
-            </ul>
-          )}
-        </div>
+        {/* <div className="dropdown-container"> */}
+        {/*   <p id='filter-text' className="dropdown-btn" onClick={() => { setIsOpen(!isOpen) }}>필터</p> */}
+        {/* 다른 곳 눌렀을 때 메뉴 안 없어짐. 없어지게 하셈. lostnfound 위치 선택하는 거기에 이거 있지않냐 */}
+        {/* {isOpen && ( */}
+        {/*   <ul className="dropdown-menu"> */}
+        {/*     <li><a onClick={() => { console.log("영화만 모아서 보여주기"); setIsOpen(false); }}>영화</a></li> */}
+        {/*     <li><a onClick={() => { console.log("책만 모아서 보여주기"); setIsOpen(false); }}>책</a></li> */}
+        {/* <li><a onClick={()=>{ console.log("음악만 모아서 보여주기"); setIsOpen(false); }}>음악</a></li> */}
+        {/*     </ul> */}
+        {/*   )} */}
+        {/* </div> */}
 
         <button className="write-btn" onClick={() => { navigate('/write') }}>🔎 글쓰기</button>
       </div>
@@ -97,9 +98,27 @@ const User = () => {
 }
 
 const NotUser = () => {
+  const navigate = useNavigate();
   // const [savedData, setSavedDate] = useState('');
-  const rawData = localStorage.getItem('NotUser_localStorage');
-  const posts: DataProps[] = rawData ? JSON.parse(rawData) : [];
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [posts, setPosts] = useState<DataProps[]>(() => {
+    const rawData = localStorage.getItem('NotUser_localStorage');
+    return rawData ? JSON.parse(rawData) : [];
+  });
+
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setOpenDropdownId(null);
+    };
+
+    if (openDropdownId !== null) {
+      window.addEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      window.removeEventListener('click', handleOutsideClick);
+    };
+  }, [openDropdownId]);
 
   // useEffect(() => {
   //   const data = localStorage.getItem('NotUser_localStorage');
@@ -145,9 +164,11 @@ const NotUser = () => {
       {/* </svg> */}
 
       <div className='media-grid'>
-        {posts.map((item: DataProps, index: number) => (
-          <div>
-            <div key={index} className="media-card">
+        {posts.map((item: DataProps, index: number) => {
+          const isMenuOpen = openDropdownId === item.id;
+
+          return (
+            <div key={index} className="media-card" onClick={() => { navigate(`/detail/${item.id}`) }} style={{ cursor: 'pointer' }}>
 
               {/* 상단 */}
               <div className="image-wrapper">
@@ -160,28 +181,61 @@ const NotUser = () => {
 
               {/* 하단 */}
               <div className="info-wrapper">
+                <span className='menu-btn' onClick={(e) => { e.stopPropagation(); }}>
+                  <div className="dropdown-container">
+                    <p id='filter-text' className="dropdown-btn" onClick={() => { setOpenDropdownId(isMenuOpen ? null : item.id) }}>⋮</p>
+                    {isMenuOpen && (
+                      <ul className="dropdown-menu">
+                        <li><a onClick={() => {
+                          console.log("여기는 confirm 굳이 안 해도 되지 않을까");
+                          setOpenDropdownId(null);
+                        }}>수정</a></li>
+
+
+
+                        <li><a onClick={() => {
+                          if (!confirm(`${item.title} 기록을 정말 삭제하시겠습니까?`)) return;
+
+                          const rawData = localStorage.getItem('NotUser_localStorage');
+                          if (!rawData) return;
+
+                          const existingPosts: DataProps[] = JSON.parse(rawData);
+                          const updatedPosts = existingPosts.filter((post) => post.id !== item.id);
+
+                          localStorage.setItem('NotUser_localStorage', JSON.stringify(updatedPosts));
+
+                          setPosts(updatedPosts);
+                          setOpenDropdownId(null);
+
+                        }} style={{ color: 'orange' }}>삭제</a></li>
+                      </ul>
+                    )}
+                  </div>
+                </span>
+
                 <h3 className="media-title">{item.title}</h3>
                 <p className="media-creator">{item.creator}</p>
                 {item.releaseDate && <span className="media-date">{item.releaseDate}</span>}
               </div>
 
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* {JSON.stringify(savedData)} */}
       {/* {JSON.stringify(posts)} 엥 posts로 해도 되는데 */}
+
     </div>
   );
 };
 
-const FriendModal = () => {
-  return (
-    <div> {/* style={{ position:"absolute" }} */}
-      <input type="text" placeholder="친구창을 하나 띄우고 거기에 친구 목록 만들고, 친구 추가 버튼도 만들자." />
-    </div>
-  )
-}
+// const FriendModal = () => {
+//   return (
+//     <div> {/* style={{ position:"absolute" }} */}
+//       <input type="text" placeholder="친구창을 하나 띄우고 거기에 친구 목록 만들고, 친구 추가 버튼도 만들자." />
+//     </div>
+//   )
+// }
 
 export default MainPage;
