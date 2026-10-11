@@ -1,10 +1,13 @@
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
 import { type DataProps } from './App.tsx';
 
 function WritePage() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = Boolean(id);
+
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -13,6 +16,7 @@ function WritePage() {
   const [content, setContent] = useState('');
   const [date, setDate] = useState('');
   const [forAPI, setForAPI] = useState<DataProps | null>(null);
+  const [editshit, setEditShit] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -22,10 +26,6 @@ function WritePage() {
     };
     fetchSession();
   }, []);
-
-  useEffect(() => {
-    setForAPI(null);
-  }, [selectedSubject]);
 
   useEffect(() => {
     const handleOutsideClick = () => {
@@ -40,7 +40,36 @@ function WritePage() {
       window.removeEventListener('click', handleOutsideClick);
     };
   }, [isOpen]);
+  
+  useEffect(() => {
+    if (isEditMode) {
+      const rawData = localStorage.getItem('NotUser_localStorage');
+      if (rawData) {
+        const posts: DataProps[] = JSON.parse(rawData);
+        const targetPost = posts.find((p) => p.id === id);
 
+        if (targetPost) {
+          setSelectedSubject(targetPost.subject);
+          setRating(targetPost.rating);
+          setContent(targetPost.content);
+          setDate(targetPost.date || '');
+          setForAPI({
+            id: targetPost.id,
+            subject: targetPost.subject,
+            images: targetPost.images,
+            title: targetPost.title,
+            creator: targetPost.creator,
+            releaseDate: targetPost.releaseDate,
+            rating: targetPost.rating,
+            content: targetPost.content,
+            date: targetPost.date,
+          });
+        
+          // console.log(targetPost.images);
+        }
+      }
+    }
+  }, [id]);
 
   if (loading) {
     return <div>로그인 정보 확인 중...</div>;
@@ -62,12 +91,13 @@ function WritePage() {
 
     const PostData: DataProps = {
       ...forAPI,
+      id: isEditMode && id ? id : forAPI.id,
       rating: rating,
       content: content,
       date: date,
     };
 
-    if (await Post(isLogin, PostData)) navigate('/', { replace: true });
+    if (await Post(isLogin, PostData, isEditMode)) navigate('/', { replace: true });
     // await Post(isLogin, PostData);
   };
 
@@ -75,17 +105,22 @@ function WritePage() {
     <div>
       {/* <h1>글쓰기</h1> */}
       <div className='dropdown-container'>
-        <p className='dropdown-btn' onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen) }}>{selectedSubject || '영화 / 도서 선택'}</p>
+        <p className='dropdown-btn' onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen) }}>{selectedSubject || '카테고리 선택'}</p>
         {isOpen &&
           <ul className='dropdown-menu'>
-            <li><a onClick={() => { setSelectedSubject('movie'); setIsOpen(false); }}>movies</a></li>
-            <li><a onClick={() => { setSelectedSubject('book'); setIsOpen(false); }}>books</a></li>
+            <li><a onClick={() => { setSelectedSubject('movie'); setIsOpen(false);
+              if (selectedSubject !== 'movie') setForAPI(null);
+            }}>movies</a></li>
+            <li><a onClick={() => { setSelectedSubject('book'); setIsOpen(false);
+              if (selectedSubject !== 'book') setForAPI(null);
+            }}>books</a></li>
             {/* <li><a onClick={()=>{ setSelectedSubject('music'); setIsOpen(false); }}>musics</a></li> */}
           </ul>
         }
       </div>
 
       <PosterSVG
+        // key={forAPI?.images || 'empty'}
         selectedSubject={selectedSubject}
         forAPI={forAPI}
         setForAPI={setForAPI}
@@ -127,7 +162,7 @@ function WritePage() {
 }
 
 
-const Post = async (isLogin: boolean, PostData: DataProps) => {
+const Post = async (isLogin: boolean, PostData: DataProps, isEditMode: boolean) => {
   if (isLogin) { // 로그인 유저 디비
 
   }
@@ -136,18 +171,25 @@ const Post = async (isLogin: boolean, PostData: DataProps) => {
     const rawData = localStorage.getItem('NotUser_localStorage');
 
     // const existingPosts: NotUserPost[] = rawData ? JSON.parse(rawData) : [];
-    let existingPosts: DataProps[] = [];
-    if (rawData) {
-      try {
-        existingPosts = Array.isArray(JSON.parse(rawData)) ? JSON.parse(rawData) : [];
-      } catch (error) {
-        console.error(error);
-        existingPosts = [];
-      }
+    let existingPosts: DataProps[] = rawData ? JSON.parse(rawData) : [];
+    // if (rawData) {
+    //   try {
+    //     existingPosts = Array.isArray(JSON.parse(rawData)) ? JSON.parse(rawData) : [];
+    //   } catch (error) {
+    //     console.error(error);
+    //     existingPosts = [];
+    //   }
+    // }
+    if (!rawData) return;
+
+    if (isEditMode) {
+      existingPosts = existingPosts.map((post) => post.id === PostData.id ? PostData : post );
+    } else {
+      existingPosts = [PostData, ...existingPosts];
     }
 
-    const updatedPosts = [PostData, ...existingPosts];
-    localStorage.setItem('NotUser_localStorage', JSON.stringify(updatedPosts));
+    // const updatedPosts = [PostData, ...existingPosts];
+    localStorage.setItem('NotUser_localStorage', JSON.stringify(existingPosts));
 
     // console.log(JSON.stringify(updatedPosts))
     return true;

@@ -167,10 +167,10 @@
    기본 스타일 및 변수 설정
    ========================================== */
 :root {
-  --bg-texture-green: #2d4a3e;
-  --bg-card-green: #3b5f50;
-  --point-yellow: #fef08a;
-  --text-light: #f3f4f6;
+  /* --bg-texture-green: #2d4a3e; */
+  /* --bg-card-green: #3b5f50; */
+  /* --point-yellow: #fef08a; */
+  /* --text-light: #f3f4f6; */
   --text-dark: #1f2937;
   --text-muted: #9ca3af;
   --border-radius: 12px;
@@ -179,7 +179,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-texture-green);
+  /* background-color: var(--bg-texture-green); */
   background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 0),
                     radial-gradient(rgba(255,255,255,0.05) 1px, transparent 0);
   background-size: 4px 4px;
