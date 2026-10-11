@@ -16,7 +16,6 @@ function WritePage() {
   const [content, setContent] = useState('');
   const [date, setDate] = useState('');
   const [forAPI, setForAPI] = useState<DataProps | null>(null);
-  const [editshit, setEditShit] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchSession = async () => {
