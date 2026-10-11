@@ -144,10 +144,10 @@
 /* } */
 /**/
 /* .book-card { */
-/*   background-color: rgba(255, 0, 0, 0.05); /* 색은 나중에 다듬는 게 좋을거같음 */ */
+/*   background-color: rgba(255, 0, 0, 0.05); /* 색은 나중에 다듬는 게 좋을거같음 */
 /*   height: 220px; */
 /*   border-radius: 6px; */
-/*   border: 1px solid rgba(255, 0, 0, 0.1); /* 여기도 */ */
+/*   border: 1px solid rgba(255, 0, 0, 0.1); /* 여기도 */
 /*   display: flex; */
 /*   justify-content: center; */
 /*   align-items: center; */
