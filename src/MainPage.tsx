@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
-import { client, checkLogin } from './supabaseClient.ts';
+import { checkLogin } from './supabaseClient.ts';
+import { client } from './supabaseClient.ts';
 import { type DataProps } from './App.tsx';
 
 function MainPage() {
   const navigate = useNavigate();
-  const [isSearch, setIsSearch] = useState(false);
+  // const [isSearch, setIsSearch] = useState(false);
   // const [isOpen, setIsOpen] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ function MainPage() {
 
   // const loginText = session?.user ? "마이페이지? 로그아웃? 다크모드? 설정?" : "로그인하셈";
 
+  // 로그아웃은 로그인 만들고 나서 다시 켜면됨
   const Logout = async () => {
     const { error } = await client.auth.signOut();
     if (!error) {
@@ -38,7 +40,7 @@ function MainPage() {
     <div className='no-cursor'> {/* 지금은 글 쓰는 것들이 MainPage 함수 밖에 있거나 아예 다른 파일이라 문제는 없는데 혹시 이 함수 안에서 글을 써야되는 일이 생기면 이거 빼야됨. 아닌가 안 빼도 글 쓸 수 있나 정확하지 않음 */}
       <button onClick={Logout}>일단 로그아웃</button>
       <header className="navbar-header">
-        <div className="logo">ReviewCollection</div>
+        <div className="logo" onClick={() => { navigate('/', { replace: true }); }}>ReviewCollection</div>
         {/* 프로토타입 이름 */}
         <nav>
           <ul className="nav-links">
@@ -46,19 +48,18 @@ function MainPage() {
             {/* {toggleFriendModal && <FriendModal />} */}
             {/* 닫는 거는 삭제 버튼 하나 만드셈 */}
 
-            <li><a onClick={() => setIsSearch(!isSearch)}>{isSearch ? "검색" : "검색"}</a></li>
+            {/* <li><a onClick={() => setIsSearch(!isSearch)}>{isSearch ? "검색" : "검색"}</a></li> */}
             {session?.user
               ? <li><a onClick={() => { session?.user && console.log("유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈"); }}>{session.user.email}의 라이브러리</a></li>
               : <li><a onClick={() => { !session?.user && navigate('/login'); }}> (여기는 형광펜이나 포스트잇 같은 거로 가려둔 거처럼)의 라이브러리</a></li>
             }
             {/* @gmail.com 까지 나오는 거 너무 길어. 아이디를 정하게 하든가, 아니면 닉네임만 뜨게 하든가 */}
 
-            {/* <li><a onClick={()=>{ session?.user ? console.log("멍청이") : navigate('/login'); }}>{ loginText }</a></li> */}
           </ul>
         </nav>
       </header>
 
-      {isSearch && <Search />}
+      {/* {isSearch && <Search />} */}
 
       <div className='ctrl'>
         {/* <div className="dropdown-container"> */}
@@ -84,7 +85,7 @@ function MainPage() {
   );
 }
 
-const Search = () => <textarea placeholder="찾고 싶은 작품 검색" />
+// const Search = () => <textarea placeholder="찾고 싶은 작품 검색" />
 
 const User = () => {
   return (
@@ -186,10 +187,11 @@ const NotUser = () => {
                     <p id='filter-text' className="dropdown-btn" onClick={() => { setOpenDropdownId(isMenuOpen ? null : item.id) }}>⋮</p>
                     {isMenuOpen && (
                       <ul className="dropdown-menu">
-                        <li><a onClick={() => { navigate(`/write/${item.id}`)
+                        <li><a onClick={() => {
+                          navigate(`/write/${item.id}`)
                           setOpenDropdownId(null);
 
-                          
+
                         }}>수정</a></li>
 
 

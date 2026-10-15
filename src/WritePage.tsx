@@ -39,7 +39,7 @@ function WritePage() {
       window.removeEventListener('click', handleOutsideClick);
     };
   }, [isOpen]);
-  
+
   useEffect(() => {
     if (isEditMode) {
       const rawData = localStorage.getItem('NotUser_localStorage');
@@ -63,7 +63,7 @@ function WritePage() {
             content: targetPost.content,
             date: targetPost.date,
           });
-        
+
           // console.log(targetPost.images);
         }
       }
@@ -107,10 +107,12 @@ function WritePage() {
         <p className='dropdown-btn' onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen) }}>{selectedSubject || '카테고리 선택'}</p>
         {isOpen &&
           <ul className='dropdown-menu'>
-            <li><a onClick={() => { setSelectedSubject('movie'); setIsOpen(false);
+            <li><a onClick={() => {
+              setSelectedSubject('movie'); setIsOpen(false);
               if (selectedSubject !== 'movie') setForAPI(null);
             }}>movies</a></li>
-            <li><a onClick={() => { setSelectedSubject('book'); setIsOpen(false);
+            <li><a onClick={() => {
+              setSelectedSubject('book'); setIsOpen(false);
               if (selectedSubject !== 'book') setForAPI(null);
             }}>books</a></li>
             {/* <li><a onClick={()=>{ setSelectedSubject('music'); setIsOpen(false); }}>musics</a></li> */}
@@ -163,7 +165,7 @@ function WritePage() {
 
 const Post = async (isLogin: boolean, PostData: DataProps, isEditMode: boolean) => {
   if (isLogin) { // 로그인 유저 디비
-
+    alert("here's for db");
   }
 
   else { // 비로그인 유저 로컬스토리지
@@ -182,7 +184,7 @@ const Post = async (isLogin: boolean, PostData: DataProps, isEditMode: boolean) 
     if (!rawData) return;
 
     if (isEditMode) {
-      existingPosts = existingPosts.map((post) => post.id === PostData.id ? PostData : post );
+      existingPosts = existingPosts.map((post) => post.id === PostData.id ? PostData : post);
     } else {
       existingPosts = [PostData, ...existingPosts];
     }
