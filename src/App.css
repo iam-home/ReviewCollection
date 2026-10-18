@@ -543,7 +543,7 @@ a,
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 6px);
-  right: 50;
+  right: 50%;
   z-index: 999;
   width: 160px;
   margin: 0;
