@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import { checkLogin } from './supabaseClient.ts';
-import { client } from './supabaseClient.ts';
+// import { client } from './supabaseClient.ts';
 import { type DataProps } from './App.tsx';
 
 function MainPage() {
@@ -29,16 +29,16 @@ function MainPage() {
   // const loginText = session?.user ? "마이페이지? 로그아웃? 다크모드? 설정?" : "로그인하셈";
 
   // 로그아웃은 로그인 만들고 나서 다시 켜면됨
-  const Logout = async () => {
-    const { error } = await client.auth.signOut();
-    if (!error) {
-      setSession(null);
-    }
-  };
+  // const Logout = async () => {
+  //   const { error } = await client.auth.signOut();
+  //   if (!error) {
+  //     setSession(null);
+  //   }
+  // };
 
   return (
     <div className='no-cursor'> {/* 지금은 글 쓰는 것들이 MainPage 함수 밖에 있거나 아예 다른 파일이라 문제는 없는데 혹시 이 함수 안에서 글을 써야되는 일이 생기면 이거 빼야됨. 아닌가 안 빼도 글 쓸 수 있나 정확하지 않음 */}
-      <button onClick={Logout}>일단 로그아웃</button>
+      {/* <button onClick={Logout}>일단 로그아웃</button> */}
       <header className="navbar-header">
         <div className="logo" onClick={() => { navigate('/', { replace: true }); }}>ReviewCollection</div>
         {/* 프로토타입 이름 */}
@@ -49,10 +49,10 @@ function MainPage() {
             {/* 닫는 거는 삭제 버튼 하나 만드셈 */}
 
             {/* <li><a onClick={() => setIsSearch(!isSearch)}>{isSearch ? "검색" : "검색"}</a></li> */}
-            {session?.user
-              ? <li><a onClick={() => { session?.user && console.log("유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈"); }}>{session.user.email}의 라이브러리</a></li>
-              : <li><a onClick={() => { !session?.user && navigate('/login'); }}> (여기는 형광펜이나 포스트잇 같은 거로 가려둔 거처럼)의 라이브러리</a></li>
-            }
+            {/* {session?.user */}
+            {/*   ? <li><a onClick={() => { session?.user && console.log("유저 있으면 dropdown 메뉴 만들어서 로그아웃, 유저페이지 뭐 그런 거 띄우게 하셈"); }}>{session.user.email}의 라이브러리</a></li> */}
+            {/*   : <li><a onClick={() => { !session?.user && navigate('/login'); }}> (여기는 형광펜이나 포스트잇 같은 거로 가려둔 거처럼)의 라이브러리</a></li> */}
+            {/* } */}
             {/* @gmail.com 까지 나오는 거 너무 길어. 아이디를 정하게 하든가, 아니면 닉네임만 뜨게 하든가 */}
 
           </ul>
@@ -90,9 +90,7 @@ function MainPage() {
 const User = () => {
   return (
     <div className='card'> {/* 책자? 책꽂이? */}
-      <p className='book-card'>여기는 api 연결해서 포스터 / 책표지 띄울듯</p>
-      <p className='book-card'>test</p>
-      <p className='book-card'>test2</p>
+      <p className='book-card'>로그인 유저는 나중에 할래</p>
     </div>
 
   )
