@@ -86,6 +86,11 @@ function WritePage() {
       return;
     }
 
+    if (rating > 5) {
+      alert("별점은 최대 5점입니다.");
+      return;
+    }
+
     const PostData: DataProps = {
       ...forAPI,
       id: isEditMode && id ? id : forAPI.id,
